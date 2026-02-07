@@ -248,7 +248,173 @@ class Game {
     
     victory() {
         this.isGameOver = true;
-        this.showGameOver(true);
+        
+        // Epic victory animation!
+        this.playVictoryAnimation();
+    }
+    
+    playVictoryAnimation() {
+        // Slow motion effect
+        this.engine.setHardwareScalingLevel(1);
+        
+        // Create victory particles
+        this.createVictoryParticles();
+        
+        // Screen flash
+        this.createVictoryFlash();
+        
+        // Play victory sound
+        this.playVictorySound();
+        
+        // Camera spin animation
+        const camera = this.player.camera;
+        const originalFov = camera.fov;
+        let spinAngle = 0;
+        let zoomProgress = 0;
+        
+        const victoryLoop = () => {
+            if (zoomProgress < 1) {
+                zoomProgress += 0.01;
+                
+                // Zoom out slowly
+                camera.fov = originalFov + zoomProgress * 0.3;
+                
+                // Slight upward look
+                camera.rotation.x = Utils.lerp(camera.rotation.x, -0.2, 0.02);
+                
+                // Gentle spin
+                spinAngle += 0.005;
+                camera.rotation.y += 0.005;
+                
+                requestAnimationFrame(victoryLoop);
+            } else {
+                // Show victory screen after animation
+                setTimeout(() => {
+                    this.showGameOver(true);
+                }, 500);
+            }
+        };
+        victoryLoop();
+    }
+    
+    createVictoryParticles() {
+        // Golden confetti particles
+        const particleSystem = new BABYLON.ParticleSystem("victoryParticles", 500, this.scene);
+        
+        // Emitter at player position
+        particleSystem.emitter = this.player.camera.position.clone();
+        
+        // Particle colors (gold, yellow, white)
+        particleSystem.color1 = new BABYLON.Color4(1, 0.85, 0, 1);
+        particleSystem.color2 = new BABYLON.Color4(1, 1, 0.5, 1);
+        particleSystem.colorDead = new BABYLON.Color4(1, 1, 1, 0);
+        
+        // Size
+        particleSystem.minSize = 0.1;
+        particleSystem.maxSize = 0.3;
+        
+        // Lifetime
+        particleSystem.minLifeTime = 2;
+        particleSystem.maxLifeTime = 4;
+        
+        // Emission
+        particleSystem.emitRate = 100;
+        particleSystem.createSphereEmitter(10);
+        
+        // Direction - upward burst
+        particleSystem.direction1 = new BABYLON.Vector3(-3, 8, -3);
+        particleSystem.direction2 = new BABYLON.Vector3(3, 12, 3);
+        
+        // Speed
+        particleSystem.minEmitPower = 2;
+        particleSystem.maxEmitPower = 5;
+        
+        // Gravity
+        particleSystem.gravity = new BABYLON.Vector3(0, -3, 0);
+        
+        particleSystem.start();
+        
+        // Stop after 3 seconds
+        setTimeout(() => {
+            particleSystem.stop();
+            setTimeout(() => particleSystem.dispose(), 5000);
+        }, 3000);
+    }
+    
+    createVictoryFlash() {
+        // White flash overlay
+        const flash = BABYLON.MeshBuilder.CreatePlane("victoryFlash", { size: 100 }, this.scene);
+        flash.parent = this.player.camera;
+        flash.position.z = 1;
+        flash.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+        
+        const flashMat = new BABYLON.StandardMaterial("flashMat", this.scene);
+        flashMat.emissiveColor = new BABYLON.Color3(1, 1, 0.8);
+        flashMat.disableLighting = true;
+        flashMat.alpha = 0.8;
+        flash.material = flashMat;
+        
+        // Fade out
+        const fadeOut = () => {
+            flashMat.alpha -= 0.02;
+            if (flashMat.alpha > 0) {
+                requestAnimationFrame(fadeOut);
+            } else {
+                flash.dispose();
+            }
+        };
+        setTimeout(fadeOut, 100);
+    }
+    
+    playVictorySound() {
+        try {
+            const ctx = BABYLON.Engine.audioEngine?.audioContext;
+            if (!ctx) return;
+            
+            const now = ctx.currentTime;
+            
+            // Victory fanfare - ascending notes
+            const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+            
+            notes.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                
+                gain.gain.setValueAtTime(0, now + i * 0.15);
+                gain.gain.linearRampToValueAtTime(0.3, now + i * 0.15 + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.15 + 0.4);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(now + i * 0.15);
+                osc.stop(now + i * 0.15 + 0.5);
+            });
+            
+            // Final chord
+            setTimeout(() => {
+                [523, 659, 784, 1047].forEach(freq => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+                    
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    
+                    osc.start();
+                    osc.stop(ctx.currentTime + 1.5);
+                });
+            }, 700);
+            
+        } catch(e) {}
     }
     
     gameOver(isVictory) {
