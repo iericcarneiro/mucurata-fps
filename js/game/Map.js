@@ -179,40 +179,40 @@ class FavelaMap {
             
             terrainPieces.push(platform);
             
-            // Create ramps connecting levels - FIXED POSITIONS, GENTLE SLOPE
+            // Create stairs connecting levels - POSITIONED FURTHER BACK
             if (level > 0) {
-                // Left ramp
-                const rampLeft = this.createRamp(
+                // Left stairs
+                const stairsLeft = this.createRamp(
                     -15,                    // X position (left side)
                     yOffset - 1.5,          // Y position
-                    zOffset - 8,            // Z position
+                    zOffset - 14,           // Z position - MORE BACK
                     6,                      // Width
-                    12,                     // Length
-                    0.25                    // Slope angle (gentler)
+                    14,                     // Length
+                    0.25                    // Slope angle
                 );
-                terrainPieces.push(rampLeft);
+                terrainPieces.push(stairsLeft);
                 
-                // Right ramp
-                const rampRight = this.createRamp(
+                // Right stairs
+                const stairsRight = this.createRamp(
                     15,                     // X position (right side)
                     yOffset - 1.5,          // Y position
-                    zOffset - 8,            // Z position
+                    zOffset - 14,           // Z position - MORE BACK
                     6,                      // Width
-                    12,                     // Length
-                    0.25                    // Slope angle (gentler)
+                    14,                     // Length
+                    0.25                    // Slope angle
                 );
-                terrainPieces.push(rampRight);
+                terrainPieces.push(stairsRight);
                 
-                // Center ramp (main access)
-                const rampCenter = this.createRamp(
+                // Center stairs (main access)
+                const stairsCenter = this.createRamp(
                     0,                      // X position (center)
                     yOffset - 1.5,          // Y position
-                    zOffset - 8,            // Z position
+                    zOffset - 16,           // Z position - EVEN MORE BACK
                     8,                      // Width (wider)
-                    14,                     // Length (longer)
-                    0.2                     // Slope angle (very gentle)
+                    16,                     // Length (longer)
+                    0.2                     // Slope angle
                 );
-                terrainPieces.push(rampCenter);
+                terrainPieces.push(stairsCenter);
             }
         }
         
