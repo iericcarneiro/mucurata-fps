@@ -470,62 +470,42 @@ class FavelaMap {
     }
     
     createProps() {
-        // Add environmental props for atmosphere
+        // Add environmental props - ON THE GROUND (not floating!)
         
-        // Water tanks on roofs
-        for (let i = 0; i < 10; i++) {
-            const x = Utils.random(-40, 40);
-            const z = Utils.random(-40, 40);
-            const groundY = this.getGroundLevel(x, z);
+        // Extra barrels for cover
+        for (let i = 0; i < 15; i++) {
+            const x = Utils.random(-45, 45);
+            const z = Utils.random(-45, 45);
             
-            const tank = BABYLON.MeshBuilder.CreateCylinder(`tank_${i}`, {
-                diameter: 1.5,
-                height: 2
+            const barrel = BABYLON.MeshBuilder.CreateCylinder(`propBarrel_${i}`, {
+                diameter: 0.7,
+                height: 1.1
             }, this.scene);
             
-            tank.position = new BABYLON.Vector3(x, groundY + 10 + Utils.random(0, 5), z);
-            tank.material = this.materials.metal;
-            this.meshes.push(tank);
+            barrel.position = new BABYLON.Vector3(x, 0.55, z);
+            barrel.material = Math.random() > 0.5 ? this.materials.rust : this.materials.metal;
+            barrel.checkCollisions = true;
+            barrel.isPickable = true;
+            this.meshes.push(barrel);
         }
         
-        // Power lines (simplified as thin boxes)
-        for (let i = 0; i < 5; i++) {
-            const x = Utils.random(-30, 30);
-            const z1 = Utils.random(-30, 30);
-            const z2 = z1 + Utils.random(10, 30);
-            
-            const wire = BABYLON.MeshBuilder.CreateBox(`wire_${i}`, {
-                width: 0.02,
-                height: 0.02,
-                depth: Math.abs(z2 - z1)
-            }, this.scene);
-            
-            wire.position = new BABYLON.Vector3(x, 8, (z1 + z2) / 2);
-            
-            const wireMat = new BABYLON.StandardMaterial(`wireMat_${i}`, this.scene);
-            wireMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1);
-            wire.material = wireMat;
-            
-            this.meshes.push(wire);
-        }
-        
-        // Satellite dishes
+        // Sandbag walls for cover
         for (let i = 0; i < 8; i++) {
             const x = Utils.random(-40, 40);
             const z = Utils.random(-40, 40);
-            const groundY = this.getGroundLevel(x, z);
             
-            const dish = BABYLON.MeshBuilder.CreateDisc(`dish_${i}`, {
-                radius: 0.4,
-                tessellation: 16
+            const sandbags = BABYLON.MeshBuilder.CreateBox(`sandbags_${i}`, {
+                width: Utils.random(2, 4),
+                height: 1,
+                depth: 0.8
             }, this.scene);
             
-            dish.position = new BABYLON.Vector3(x, groundY + Utils.random(6, 15), z);
-            dish.rotation.x = -Math.PI / 3;
-            dish.rotation.y = Utils.random(0, Math.PI * 2);
-            dish.material = this.materials.metal;
-            
-            this.meshes.push(dish);
+            sandbags.position = new BABYLON.Vector3(x, 0.5, z);
+            sandbags.rotation.y = Utils.random(0, Math.PI);
+            sandbags.material = this.materials.ground;
+            sandbags.checkCollisions = true;
+            sandbags.isPickable = true;
+            this.meshes.push(sandbags);
         }
     }
     
