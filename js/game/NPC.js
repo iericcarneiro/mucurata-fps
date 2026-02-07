@@ -892,12 +892,46 @@ class NPC {
             // Look at player immediately
             this.lookAt(player.collider.position);
             
-            // SHOOT BACK IMMEDIATELY!
-            this.lastFireTime = 0; // Reset fire cooldown
-            this.tryFireAtPlayer(player);
+            // SHOOT BACK IMMEDIATELY - even from far away!
+            this.fireBackAtPlayer(player);
         }
         
         return false;
+    }
+    
+    // Special method to fire back when hit - ignores distance/visibility
+    fireBackAtPlayer(player) {
+        if (this.isDead || player.isDead) return;
+        
+        // Calculate distance for accuracy falloff
+        const distance = BABYLON.Vector3.Distance(this.mesh.position, player.collider.position);
+        
+        // Accuracy decreases with distance but still has a chance
+        let accuracy = this.accuracy;
+        if (distance > 30) accuracy *= 0.7;
+        if (distance > 50) accuracy *= 0.6;
+        if (distance > 70) accuracy *= 0.5;
+        
+        // Always at least 20% chance to hit
+        accuracy = Math.max(0.2, accuracy);
+        
+        const hit = Math.random() < accuracy;
+        
+        if (hit) {
+            let damage = this.damage;
+            // Damage falloff at range
+            if (distance > 30) damage *= 0.8;
+            if (distance > 50) damage *= 0.7;
+            
+            player.takeDamage(damage);
+        }
+        
+        // Visual/audio feedback
+        this.createMuzzleFlash();
+        Utils.playSound(this.scene, 'shoot');
+        
+        // Reset fire time so they can keep shooting
+        this.lastFireTime = performance.now();
     }
     
     alertNearbyNPCs() {
