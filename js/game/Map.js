@@ -23,65 +23,96 @@ class FavelaMap {
     }
     
     createMaterials() {
-        // Brick wall material
+        // Brick wall material - more detailed
         const brickMat = new BABYLON.PBRMaterial("brickMat", this.scene);
-        brickMat.albedoColor = new BABYLON.Color3(0.6, 0.4, 0.3);
-        brickMat.roughness = 0.9;
+        brickMat.albedoColor = new BABYLON.Color3(0.55, 0.35, 0.28);
+        brickMat.roughness = 0.92;
         brickMat.metallic = 0;
+        brickMat.bumpTexture = this.createNoiseTexture("brickBump", 0.3);
         this.materials.brick = brickMat;
         
-        // Concrete material
+        // Concrete material - gritty
         const concreteMat = new BABYLON.PBRMaterial("concreteMat", this.scene);
-        concreteMat.albedoColor = new BABYLON.Color3(0.5, 0.5, 0.48);
-        concreteMat.roughness = 0.85;
+        concreteMat.albedoColor = new BABYLON.Color3(0.45, 0.44, 0.42);
+        concreteMat.roughness = 0.88;
         concreteMat.metallic = 0;
+        concreteMat.bumpTexture = this.createNoiseTexture("concreteBump", 0.2);
         this.materials.concrete = concreteMat;
         
-        // Metal sheet material
+        // Metal sheet material - shinier
         const metalMat = new BABYLON.PBRMaterial("metalMat", this.scene);
-        metalMat.albedoColor = new BABYLON.Color3(0.35, 0.38, 0.4);
-        metalMat.roughness = 0.6;
-        metalMat.metallic = 0.7;
+        metalMat.albedoColor = new BABYLON.Color3(0.4, 0.42, 0.45);
+        metalMat.roughness = 0.4;
+        metalMat.metallic = 0.85;
+        metalMat.bumpTexture = this.createNoiseTexture("metalBump", 0.1);
         this.materials.metal = metalMat;
         
-        // Rusted metal
+        // Rusted metal - more variation
         const rustMat = new BABYLON.PBRMaterial("rustMat", this.scene);
-        rustMat.albedoColor = new BABYLON.Color3(0.5, 0.3, 0.2);
-        rustMat.roughness = 0.9;
-        rustMat.metallic = 0.3;
+        rustMat.albedoColor = new BABYLON.Color3(0.45, 0.28, 0.18);
+        rustMat.roughness = 0.95;
+        rustMat.metallic = 0.2;
+        rustMat.bumpTexture = this.createNoiseTexture("rustBump", 0.4);
         this.materials.rust = rustMat;
         
-        // Wood material
+        // Wood material - richer
         const woodMat = new BABYLON.PBRMaterial("woodMat", this.scene);
-        woodMat.albedoColor = new BABYLON.Color3(0.4, 0.28, 0.18);
-        woodMat.roughness = 0.8;
+        woodMat.albedoColor = new BABYLON.Color3(0.35, 0.24, 0.15);
+        woodMat.roughness = 0.75;
         woodMat.metallic = 0;
+        woodMat.bumpTexture = this.createNoiseTexture("woodBump", 0.25);
         this.materials.wood = woodMat;
         
-        // Ground material
+        // Ground material - dirt/asphalt mix
         const groundMat = new BABYLON.PBRMaterial("groundMat", this.scene);
-        groundMat.albedoColor = new BABYLON.Color3(0.35, 0.3, 0.25);
-        groundMat.roughness = 0.95;
+        groundMat.albedoColor = new BABYLON.Color3(0.3, 0.28, 0.24);
+        groundMat.roughness = 0.98;
         groundMat.metallic = 0;
+        groundMat.bumpTexture = this.createNoiseTexture("groundBump", 0.15);
         this.materials.ground = groundMat;
         
-        // Painted walls (various colors)
+        // Painted walls (various colors) - more muted CS-style
         const colors = [
-            new BABYLON.Color3(0.7, 0.6, 0.4), // Tan
-            new BABYLON.Color3(0.8, 0.75, 0.6), // Cream
-            new BABYLON.Color3(0.6, 0.7, 0.8), // Light blue
-            new BABYLON.Color3(0.8, 0.6, 0.6), // Pink
-            new BABYLON.Color3(0.7, 0.8, 0.6), // Light green
-            new BABYLON.Color3(0.85, 0.8, 0.7), // Beige
+            new BABYLON.Color3(0.65, 0.55, 0.42), // Tan
+            new BABYLON.Color3(0.72, 0.68, 0.58), // Cream
+            new BABYLON.Color3(0.52, 0.58, 0.65), // Muted blue
+            new BABYLON.Color3(0.68, 0.55, 0.55), // Dusty pink
+            new BABYLON.Color3(0.58, 0.65, 0.52), // Sage green
+            new BABYLON.Color3(0.75, 0.72, 0.65), // Beige
+            new BABYLON.Color3(0.6, 0.58, 0.55),  // Warm gray
+            new BABYLON.Color3(0.7, 0.62, 0.52),  // Sandstone
         ];
         
         this.materials.painted = colors.map((color, i) => {
             const mat = new BABYLON.PBRMaterial(`paintedMat${i}`, this.scene);
             mat.albedoColor = color;
-            mat.roughness = 0.85;
+            mat.roughness = 0.82;
             mat.metallic = 0;
+            mat.bumpTexture = this.createNoiseTexture(`paintBump${i}`, 0.08);
             return mat;
         });
+    }
+    
+    createNoiseTexture(name, intensity) {
+        // Create procedural bump texture for surface detail
+        const texture = new BABYLON.DynamicTexture(name, 128, this.scene);
+        const ctx = texture.getContext();
+        
+        // Fill with noise
+        const imageData = ctx.createImageData(128, 128);
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const noise = Math.random() * 255;
+            const value = 128 + (noise - 128) * intensity;
+            imageData.data[i] = value;
+            imageData.data[i + 1] = value;
+            imageData.data[i + 2] = value;
+            imageData.data[i + 3] = 255;
+        }
+        ctx.putImageData(imageData, 0, 0);
+        texture.update();
+        
+        texture.level = intensity;
+        return texture;
     }
     
     generate() {
@@ -503,51 +534,81 @@ class FavelaMap {
     }
     
     createLighting() {
-        // Ambient light
+        // Ambient light - lower for more contrast (CS-style)
         const ambient = new BABYLON.HemisphericLight("ambient", new BABYLON.Vector3(0, 1, 0), this.scene);
-        ambient.intensity = 0.4;
-        ambient.groundColor = new BABYLON.Color3(0.3, 0.25, 0.2);
+        ambient.intensity = 0.25;
+        ambient.groundColor = new BABYLON.Color3(0.15, 0.12, 0.1);
+        ambient.specular = new BABYLON.Color3(0.1, 0.1, 0.1);
         
-        // Main directional light (sun)
-        const sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-0.5, -1, -0.3), this.scene);
-        sun.intensity = 1.2;
-        sun.diffuse = new BABYLON.Color3(1, 0.95, 0.85);
+        // Main directional light (sun) - more dramatic angle
+        const sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-0.4, -0.8, -0.4), this.scene);
+        sun.intensity = 1.8;
+        sun.diffuse = new BABYLON.Color3(1, 0.92, 0.8);
+        sun.specular = new BABYLON.Color3(1, 0.95, 0.85);
         
-        // Shadow generator
-        const shadowGenerator = new BABYLON.ShadowGenerator(2048, sun);
-        shadowGenerator.useBlurExponentialShadowMap = true;
-        shadowGenerator.blurKernel = 32;
+        // High quality shadow generator
+        const shadowGenerator = new BABYLON.ShadowGenerator(4096, sun);
+        shadowGenerator.usePercentageCloserFiltering = true; // PCF for softer shadows
+        shadowGenerator.filteringQuality = BABYLON.ShadowGenerator.QUALITY_HIGH;
+        shadowGenerator.bias = 0.001;
+        shadowGenerator.normalBias = 0.02;
+        shadowGenerator.darkness = 0.3; // Not too dark
+        
+        // Cascaded shadows for better quality at distance
+        sun.shadowMinZ = 1;
+        sun.shadowMaxZ = 150;
         
         // Add main meshes to shadow caster
-        this.meshes.slice(0, 50).forEach(mesh => {
+        this.meshes.slice(0, 80).forEach(mesh => {
             shadowGenerator.addShadowCaster(mesh);
+            mesh.receiveShadows = true;
         });
         
-        // Point lights in alleyways for atmosphere
-        const lightColors = [
-            new BABYLON.Color3(1, 0.9, 0.7),
-            new BABYLON.Color3(1, 0.8, 0.5),
-            new BABYLON.Color3(0.9, 0.95, 1),
+        this.shadowGenerator = shadowGenerator;
+        
+        // Fill light from opposite side (softer)
+        const fillLight = new BABYLON.DirectionalLight("fill", new BABYLON.Vector3(0.3, -0.5, 0.5), this.scene);
+        fillLight.intensity = 0.4;
+        fillLight.diffuse = new BABYLON.Color3(0.7, 0.8, 1); // Slight blue tint
+        fillLight.specular = new BABYLON.Color3(0, 0, 0);
+        
+        // Point lights in alleyways for atmosphere - warmer, more varied
+        const lightConfigs = [
+            { color: new BABYLON.Color3(1, 0.7, 0.4), intensity: 0.8 },   // Warm bulb
+            { color: new BABYLON.Color3(1, 0.9, 0.7), intensity: 0.6 },   // Soft white
+            { color: new BABYLON.Color3(0.9, 0.95, 1), intensity: 0.5 },  // Cool white
+            { color: new BABYLON.Color3(1, 0.5, 0.2), intensity: 0.4 },   // Orange
         ];
         
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 12; i++) {
+            const config = Utils.randomElement(lightConfigs);
             const light = new BABYLON.PointLight(
                 `alleyLight_${i}`,
                 new BABYLON.Vector3(
                     Utils.random(-35, 35),
-                    Utils.random(3, 6),
+                    Utils.random(2.5, 5),
                     Utils.random(-35, 35)
                 ),
                 this.scene
             );
-            light.intensity = 0.5;
-            light.diffuse = Utils.randomElement(lightColors);
-            light.range = 15;
+            light.intensity = config.intensity;
+            light.diffuse = config.color;
+            light.range = 12;
+            light.shadowEnabled = false; // Performance
+            
+            // Add visible light bulb mesh
+            const bulb = BABYLON.MeshBuilder.CreateSphere(`bulb_${i}`, { diameter: 0.15 }, this.scene);
+            bulb.position = light.position.clone();
+            const bulbMat = new BABYLON.StandardMaterial(`bulbMat_${i}`, this.scene);
+            bulbMat.emissiveColor = config.color;
+            bulbMat.disableLighting = true;
+            bulb.material = bulbMat;
+            this.meshes.push(bulb);
         }
     }
     
     createSkybox() {
-        // Create gradient sky
+        // Create gradient sky - CS:GO style overcast/hazy
         const skybox = BABYLON.MeshBuilder.CreateSphere("skybox", { 
             diameter: 500,
             sideOrientation: BABYLON.Mesh.BACKSIDE
@@ -557,20 +618,36 @@ class FavelaMap {
         skyMat.backFaceCulling = false;
         skyMat.disableLighting = true;
         
-        // Create gradient texture for sky
-        const skyTexture = new BABYLON.DynamicTexture("skyTexture", { width: 256, height: 256 }, this.scene);
+        // Create gradient texture for sky - more muted CS-style
+        const skyTexture = new BABYLON.DynamicTexture("skyTexture", { width: 512, height: 512 }, this.scene);
         const ctx = skyTexture.getContext();
         
-        const gradient = ctx.createLinearGradient(0, 0, 0, 256);
-        gradient.addColorStop(0, '#1a1a2e');    // Deep blue at top
-        gradient.addColorStop(0.3, '#2d3b4f'); // Dark blue
-        gradient.addColorStop(0.5, '#4a6fa5'); // Medium blue
-        gradient.addColorStop(0.7, '#87a7c9'); // Light blue
-        gradient.addColorStop(0.85, '#c4b896'); // Warm haze
-        gradient.addColorStop(1, '#d4c5a0');   // Horizon
+        const gradient = ctx.createLinearGradient(0, 0, 0, 512);
+        gradient.addColorStop(0, '#2a3a4a');    // Muted blue-gray at top
+        gradient.addColorStop(0.2, '#3d4d5d');  // Slate
+        gradient.addColorStop(0.4, '#5a6a7a');  // Gray-blue
+        gradient.addColorStop(0.55, '#7a8a9a'); // Lighter gray
+        gradient.addColorStop(0.7, '#9aa0a6');  // Overcast
+        gradient.addColorStop(0.85, '#b5a89a'); // Warm haze
+        gradient.addColorStop(0.95, '#c5b5a0'); // Horizon haze
+        gradient.addColorStop(1, '#d5c5a5');    // Ground haze
         
         ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 256, 256);
+        ctx.fillRect(0, 0, 512, 512);
+        
+        // Add some subtle cloud-like noise
+        ctx.globalAlpha = 0.08;
+        for (let i = 0; i < 100; i++) {
+            const x = Math.random() * 512;
+            const y = Math.random() * 300;
+            const size = Math.random() * 60 + 20;
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(x, y, size, size * 0.4, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        
         skyTexture.update();
         
         skyMat.emissiveTexture = skyTexture;

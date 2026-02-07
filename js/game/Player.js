@@ -130,6 +130,26 @@ class Player {
         // Mouse events
         window.addEventListener('mousedown', (e) => this.onMouseDown(e));
         window.addEventListener('mouseup', (e) => this.onMouseUp(e));
+        window.addEventListener('wheel', (e) => this.onWheel(e));
+    }
+    
+    onWheel(e) {
+        if (this.isDead) return;
+        if (!document.pointerLockElement) return;
+        
+        // Scroll down = next weapon, scroll up = previous weapon
+        const maxSlot = Object.keys(this.weapons).length;
+        let newSlot = this.currentWeaponSlot;
+        
+        if (e.deltaY > 0) {
+            // Scroll down - next weapon
+            newSlot = newSlot >= maxSlot ? 1 : newSlot + 1;
+        } else if (e.deltaY < 0) {
+            // Scroll up - previous weapon
+            newSlot = newSlot <= 1 ? maxSlot : newSlot - 1;
+        }
+        
+        this.switchWeapon(newSlot);
     }
     
     onKeyDown(e) {

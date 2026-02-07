@@ -1,5 +1,5 @@
 /**
- * Main Entry Point for Mucurata FPS
+ * Main Entry Point for Mucuratá FPS
  * 
  * A realistic browser-based FPS game using Babylon.js
  * Theme: Police vs Criminals in favela
@@ -7,7 +7,7 @@
 
 // Wait for DOM to load
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🎮 Mucurata FPS - Initializing...');
+    console.log('🎮 Mucuratá FPS - Initializing...');
     
     // Get canvas
     const canvas = document.getElementById('renderCanvas');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
         
-        console.log('🎮 Mucurata FPS - Ready to play!');
+        console.log('🎮 Mucuratá FPS - Ready to play!');
         
     } catch (error) {
         console.error('Failed to initialize game:', error);

@@ -107,10 +107,12 @@ class Game {
         // Enable collisions
         this.scene.collisionsEnabled = true;
         
-        // Set up fog for atmosphere
+        // Set up fog for atmosphere - CS-style distance haze
         this.scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
-        this.scene.fogDensity = 0.003;
-        this.scene.fogColor = new BABYLON.Color3(0.5, 0.5, 0.55);
+        this.scene.fogDensity = 0.008;
+        this.scene.fogColor = new BABYLON.Color3(0.55, 0.53, 0.5);
+        this.scene.fogStart = 30;
+        this.scene.fogEnd = 120;
         
         // Post-processing
         this.setupPostProcessing();
@@ -131,26 +133,76 @@ class Game {
             [this.player.camera]
         );
         
-        // Enable bloom for muzzle flashes and lights
+        // Enable bloom for muzzle flashes and lights (CS-style subtle)
         pipeline.bloomEnabled = true;
-        pipeline.bloomThreshold = 0.8;
-        pipeline.bloomWeight = 0.3;
+        pipeline.bloomThreshold = 0.7;
+        pipeline.bloomWeight = 0.4;
         pipeline.bloomKernel = 64;
+        pipeline.bloomScale = 0.6;
         
-        // Enable FXAA
+        // Enable FXAA for smooth edges
         pipeline.fxaaEnabled = true;
         
-        // Enable tone mapping
+        // Sharpen for crispy visuals like CS
+        pipeline.sharpenEnabled = true;
+        pipeline.sharpen.edgeAmount = 0.3;
+        pipeline.sharpen.colorAmount = 1.0;
+        
+        // Enable tone mapping - more cinematic
         pipeline.imageProcessingEnabled = true;
         pipeline.imageProcessing.toneMappingEnabled = true;
         pipeline.imageProcessing.toneMappingType = BABYLON.ImageProcessingConfiguration.TONEMAPPING_ACES;
-        pipeline.imageProcessing.exposure = 1.0;
-        pipeline.imageProcessing.contrast = 1.1;
+        pipeline.imageProcessing.exposure = 1.1;
+        pipeline.imageProcessing.contrast = 1.25;
         
-        // Slight vignette
+        // Color grading for CS-style look (slightly desaturated, gritty)
+        pipeline.imageProcessing.colorCurvesEnabled = true;
+        const curves = new BABYLON.ColorCurves();
+        curves.globalSaturation = -15; // Slightly desaturated
+        curves.highlightsSaturation = -10;
+        curves.shadowsSaturation = 5;
+        curves.globalExposure = 5;
+        pipeline.imageProcessing.colorCurves = curves;
+        
+        // Vignette for focus
         pipeline.imageProcessing.vignetteEnabled = true;
-        pipeline.imageProcessing.vignetteWeight = 1.5;
-        pipeline.imageProcessing.vignetteCameraFov = 0.5;
+        pipeline.imageProcessing.vignetteWeight = 2.0;
+        pipeline.imageProcessing.vignetteCameraFov = 0.4;
+        pipeline.imageProcessing.vignetteColor = new BABYLON.Color4(0, 0, 0, 1);
+        
+        // Chromatic aberration (subtle, for realism)
+        pipeline.chromaticAberrationEnabled = true;
+        pipeline.chromaticAberration.aberrationAmount = 15;
+        pipeline.chromaticAberration.radialIntensity = 0.8;
+        
+        // Grain for cinematic feel
+        pipeline.grainEnabled = true;
+        pipeline.grain.intensity = 8;
+        pipeline.grain.animated = true;
+        
+        // Store pipeline reference
+        this.renderPipeline = pipeline;
+        
+        // SSAO for depth and realism
+        this.setupSSAO();
+    }
+    
+    setupSSAO() {
+        // Screen Space Ambient Occlusion
+        const ssaoRatio = {
+            ssaoRatio: 0.5,
+            blurRatio: 0.5
+        };
+        
+        const ssao = new BABYLON.SSAO2RenderingPipeline("ssao", this.scene, ssaoRatio, [this.player.camera]);
+        ssao.radius = 1.5;
+        ssao.totalStrength = 1.2;
+        ssao.expensiveBlur = true;
+        ssao.samples = 16;
+        ssao.maxZ = 100;
+        ssao.minZAspect = 0.5;
+        
+        this.ssaoPipeline = ssao;
     }
     
     update() {
