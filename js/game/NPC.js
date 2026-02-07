@@ -398,6 +398,46 @@ class NPC {
         });
     }
     
+    applyGravity(deltaTime) {
+        // Raycast down to find ground
+        const rayStart = this.mesh.position.clone();
+        rayStart.y += 1; // Start from above feet
+        
+        const ray = new BABYLON.Ray(rayStart, new BABYLON.Vector3(0, -1, 0), 50);
+        const hit = this.scene.pickWithRay(ray, (mesh) => {
+            return mesh.checkCollisions && 
+                   mesh.isPickable &&
+                   !mesh.name.includes('npc_') && 
+                   !mesh.name.includes('collider_') &&
+                   !mesh.name.includes('head_') &&
+                   !mesh.name.includes('torso_') &&
+                   !mesh.name.includes('weapon') &&
+                   !mesh.name.includes('Arm') &&
+                   !mesh.name.includes('Leg') &&
+                   mesh.name !== 'playerCollider';
+        });
+        
+        if (hit && hit.hit && hit.pickedPoint) {
+            const groundY = hit.pickedPoint.y;
+            const currentY = this.mesh.position.y;
+            
+            // If above ground, apply gravity
+            if (currentY > groundY + 0.1) {
+                this.mesh.position.y -= 15 * deltaTime; // Fall speed
+            } else {
+                // Snap to ground
+                this.mesh.position.y = groundY;
+            }
+        } else {
+            // No ground found, fall towards 0
+            if (this.mesh.position.y > 0) {
+                this.mesh.position.y -= 15 * deltaTime;
+            } else {
+                this.mesh.position.y = 0;
+            }
+        }
+    }
+    
     generatePatrolPoints(origin) {
         // Create 3-5 patrol points around spawn location
         const numPoints = Utils.randomInt(3, 5);
@@ -421,6 +461,9 @@ class NPC {
     
     update(deltaTime, player) {
         if (this.isDead) return;
+        
+        // Apply gravity - keep NPC on ground
+        this.applyGravity(deltaTime);
         
         // Update based on state
         switch(this.state) {

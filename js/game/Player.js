@@ -92,6 +92,36 @@ class Player {
         });
     }
     
+    checkWallCollision(movement) {
+        if (movement.length() < 0.001) return true;
+        
+        const direction = movement.normalize();
+        const rayStart = this.collider.position.clone();
+        rayStart.y = this.collider.position.y + 0.5; // Check at mid-height
+        
+        // Cast ray in movement direction
+        const ray = new BABYLON.Ray(rayStart, direction, 0.6); // 0.6 = player radius + margin
+        
+        const hit = this.scene.pickWithRay(ray, (mesh) => {
+            return mesh !== this.collider && 
+                   mesh.checkCollisions && 
+                   mesh.isPickable &&
+                   !mesh.name.includes('npc_') &&
+                   !mesh.name.includes('collider_') &&
+                   !mesh.name.includes('head_') &&
+                   !mesh.name.includes('weapon') &&
+                   mesh.name !== 'ground' &&
+                   mesh.name !== 'skybox';
+        });
+        
+        // If hit something close, block movement
+        if (hit && hit.hit && hit.distance < 0.5) {
+            return false;
+        }
+        
+        return true;
+    }
+    
     createCollider() {
         // Create collider for player (no physics - use Babylon collision system)
         this.collider = BABYLON.MeshBuilder.CreateBox("playerCollider", {
@@ -332,8 +362,19 @@ class Player {
             this.velocity.z * deltaTime
         );
         
-        // Use Babylon's moveWithCollisions for proper wall collision
-        this.collider.moveWithCollisions(movement);
+        // Check wall collisions with raycasting before moving
+        const canMoveX = this.checkWallCollision(new BABYLON.Vector3(movement.x, 0, 0));
+        const canMoveZ = this.checkWallCollision(new BABYLON.Vector3(0, 0, movement.z));
+        
+        // Build final movement vector
+        const finalMovement = new BABYLON.Vector3(
+            canMoveX ? movement.x : 0,
+            movement.y,
+            canMoveZ ? movement.z : 0
+        );
+        
+        // Use Babylon's moveWithCollisions for additional safety
+        this.collider.moveWithCollisions(finalMovement);
         
         // Clamp to ground level minimum
         if (this.collider.position.y < 1) {
