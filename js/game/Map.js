@@ -508,19 +508,33 @@ class FavelaMap {
     }
     
     createSpawnPoints() {
-        // Police spawns at bottom of map
+        // Police spawns at bottom of map (open area)
         for (let i = 0; i < 10; i++) {
             this.spawnPoints.police.push(new BABYLON.Vector3(
-                Utils.random(-30, 30),
+                Utils.random(-25, 25),
                 2,
-                Utils.random(35, 45)
+                Utils.random(40, 48)
             ));
         }
         
-        // Criminal spawns at top of map (in the favela)
+        // Criminal spawns - OPEN AREAS in the favela (not inside houses!)
+        // Spawn in alleys and open spaces
+        const criminalSpawnZones = [
+            { x: 0, z: -15, radius: 5 },     // Central alley
+            { x: -25, z: -25, radius: 4 },   // Left side
+            { x: 25, z: -25, radius: 4 },    // Right side
+            { x: 0, z: -40, radius: 6 },     // Top of hill
+            { x: -15, z: -10, radius: 4 },   // Left alley
+            { x: 15, z: -10, radius: 4 },    // Right alley
+        ];
+        
         for (let i = 0; i < 10; i++) {
-            const x = Utils.random(-30, 30);
-            const z = Utils.random(-35, -20);
+            const zone = criminalSpawnZones[i % criminalSpawnZones.length];
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * zone.radius;
+            
+            const x = zone.x + Math.cos(angle) * dist;
+            const z = zone.z + Math.sin(angle) * dist;
             const y = this.getGroundLevel(x, z) + 2;
             
             this.spawnPoints.criminal.push(new BABYLON.Vector3(x, y, z));
