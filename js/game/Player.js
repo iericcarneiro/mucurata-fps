@@ -103,11 +103,16 @@ class Player {
         this.collider.isVisible = false;
         this.collider.isPickable = false;
         
-        // Use Babylon's built-in collision system instead of physics
+        // Use Babylon's built-in collision system
         this.collider.checkCollisions = true;
+        
+        // Ellipsoid defines collision shape (half-extents)
         this.collider.ellipsoid = new BABYLON.Vector3(0.4, 0.9, 0.4);
         
-        console.log('Player collider created');
+        // Offset so ellipsoid center is at player feet level
+        this.collider.ellipsoidOffset = new BABYLON.Vector3(0, 0.9, 0);
+        
+        console.log('Player collider created with wall collision');
     }
     
     setupWeapons(primaryWeapon) {
@@ -320,14 +325,15 @@ class Player {
             }
         }
         
-        // Apply movement directly (no physics)
+        // Apply movement WITH COLLISION DETECTION
         const movement = new BABYLON.Vector3(
             this.velocity.x * deltaTime,
             this.velocity.y * deltaTime,
             this.velocity.z * deltaTime
         );
         
-        this.collider.position.addInPlace(movement);
+        // Use Babylon's moveWithCollisions for proper wall collision
+        this.collider.moveWithCollisions(movement);
         
         // Clamp to ground level minimum
         if (this.collider.position.y < 1) {
