@@ -5,6 +5,18 @@
  * Theme: Police vs Criminals in favela
  */
 
+// Global error handler to catch crashes
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+    console.error('🔴 CRASH DETECTED:', msg);
+    console.error('📍 Location:', url, 'line:', lineNo, 'col:', columnNo);
+    console.error('📋 Stack:', error ? error.stack : 'N/A');
+    return false;
+};
+
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('🔴 UNHANDLED PROMISE:', event.reason);
+});
+
 // Wait for DOM to load
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🎮 Mucuratá FPS - Initializing...');

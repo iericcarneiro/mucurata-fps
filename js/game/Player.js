@@ -406,24 +406,34 @@ class Player {
         if (hits && hits.length > 0) {
             // Check if this is a melee attack (knife)
             const isMelee = this.currentWeapon && this.currentWeapon.type === WeaponTypes.KNIFE;
+            if (isMelee) console.log('🔪 KNIFE HIT - processing', hits.length, 'hits');
             
             // Process hits
             for (const hit of hits) {
-                if (hit.mesh && hit.mesh.metadata && hit.mesh.metadata.isNPC) {
-                    // Damage NPC
-                    const npc = hit.mesh.metadata.npcInstance;
-                    if (npc) {
-                        const killed = npc.takeDamage(hit.damage, null, isMelee);
-                        this.showHitmarker(killed);
-                        
-                        if (killed) {
-                            this.kills++;
-                            this.updateKillsUI();
+                try {
+                    if (hit.mesh && hit.mesh.metadata && hit.mesh.metadata.isNPC) {
+                        if (isMelee) console.log('🔪 Hit NPC, damage:', hit.damage);
+                        // Damage NPC
+                        const npc = hit.mesh.metadata.npcInstance;
+                        if (npc) {
+                            if (isMelee) console.log('🔪 Calling takeDamage...');
+                            const killed = npc.takeDamage(hit.damage, null, isMelee);
+                            if (isMelee) console.log('🔪 takeDamage done, killed:', killed);
+                            this.showHitmarker(killed);
+                            if (isMelee) console.log('🔪 showHitmarker done');
+                            
+                            if (killed) {
+                                this.kills++;
+                                this.updateKillsUI();
+                            }
+                            if (isMelee) console.log('🔪 Hit processing complete');
                         }
+                    } else if (hit.point) {
+                        // Create bullet impact effect
+                        this.createBulletImpact(hit.point, hit.mesh);
                     }
-                } else if (hit.point) {
-                    // Create bullet impact effect
-                    this.createBulletImpact(hit.point, hit.mesh);
+                } catch (e) {
+                    console.error('🔴 HIT PROCESSING ERROR:', e);
                 }
             }
             

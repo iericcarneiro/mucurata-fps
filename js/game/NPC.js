@@ -883,6 +883,7 @@ class NPC {
     }
     
     takeDamage(amount, hitPart = null, isMelee = false) {
+        if (isMelee) console.log('🎯 NPC.takeDamage START, amount:', amount);
         if (this.isDead) return false;
         
         // Headshot bonus damage
@@ -892,28 +893,44 @@ class NPC {
         
         // Store melee flag for fireBackAtPlayer
         this._lastHitWasMelee = isMelee;
+        if (isMelee) console.log('🎯 NPC health before:', this.health);
         
         this.health -= amount;
+        if (isMelee) console.log('🎯 NPC health after:', this.health);
         
         // Flash red when hit - all body parts (quick, non-blocking)
-        Object.values(this.bodyParts).forEach(part => {
-            if (part && part.material && part.material.diffuseColor) {
-                const original = part.material.diffuseColor.clone();
-                part.material.diffuseColor = new BABYLON.Color3(1, 0.2, 0.2);
-                
-                setTimeout(() => {
-                    if (part && part.material) {
-                        part.material.diffuseColor = original;
-                    }
-                }, 80);
-            }
-        });
+        try {
+            if (isMelee) console.log('🎯 Flashing body parts red...');
+            Object.values(this.bodyParts).forEach(part => {
+                if (part && part.material && part.material.diffuseColor) {
+                    const original = part.material.diffuseColor.clone();
+                    part.material.diffuseColor = new BABYLON.Color3(1, 0.2, 0.2);
+                    
+                    setTimeout(() => {
+                        if (part && part.material) {
+                            part.material.diffuseColor = original;
+                        }
+                    }, 80);
+                }
+            });
+            if (isMelee) console.log('🎯 Body flash done');
+        } catch (e) {
+            console.error('🔴 Body flash error:', e);
+        }
         
         // Alert nearby NPCs
-        this.alertNearbyNPCs();
+        try {
+            if (isMelee) console.log('🎯 Alerting nearby NPCs...');
+            this.alertNearbyNPCs();
+            if (isMelee) console.log('🎯 Alert done');
+        } catch (e) {
+            console.error('🔴 Alert NPCs error:', e);
+        }
         
         if (this.health <= 0) {
+            if (isMelee) console.log('🎯 NPC KILLED! Calling die()...');
             this.die();
+            if (isMelee) console.log('🎯 die() done');
             return true;
         }
         
@@ -928,12 +945,25 @@ class NPC {
             this.lastSeenPlayerTime = performance.now();
             
             // Look at player immediately
-            this.lookAt(player.collider.position);
+            try {
+                if (isMelee) console.log('🎯 Looking at player...');
+                this.lookAt(player.collider.position);
+                if (isMelee) console.log('🎯 lookAt done');
+            } catch (e) {
+                console.error('🔴 lookAt error:', e);
+            }
             
             // SHOOT BACK IMMEDIATELY - even from far away!
-            this.fireBackAtPlayer(player);
+            try {
+                if (isMelee) console.log('🎯 Firing back at player...');
+                this.fireBackAtPlayer(player);
+                if (isMelee) console.log('🎯 fireBack done');
+            } catch (e) {
+                console.error('🔴 fireBack error:', e);
+            }
         }
         
+        if (isMelee) console.log('🎯 NPC.takeDamage END');
         return false;
     }
     
