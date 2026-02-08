@@ -511,26 +511,32 @@ class Player {
     }
     
     aim(isAiming) {
-        console.log('🎯 AIM called:', isAiming, 'weapon:', this.currentWeapon?.type, 'scopeZoom:', this.currentWeapon?.data?.scopeZoom);
+        if (!this.currentWeapon) return;
         
-        // Implement scope/ADS for sniper
-        if (this.currentWeapon && this.currentWeapon.data.scopeZoom) {
-            console.log('🎯 Activating scope!');
+        const hudEl = document.getElementById('hud');
+        const scopeEl = document.getElementById('sniper-scope');
+        const ironSightsEl = document.getElementById('iron-sights');
+        
+        // Sniper scope
+        if (this.currentWeapon.data.scopeZoom) {
             this.camera.fov = isAiming ? 1.2 / this.currentWeapon.data.scopeZoom : 1.2;
             
-            // Show/hide sniper scope overlay
-            const scopeEl = document.getElementById('sniper-scope');
-            const hudEl = document.getElementById('hud');
-            console.log('🎯 Elements:', scopeEl, hudEl);
-            if (scopeEl) {
-                scopeEl.style.display = isAiming ? 'block' : 'none';
-                console.log('🎯 Scope display:', scopeEl.style.display);
-            }
-            if (hudEl) {
-                hudEl.classList.toggle('scoped', isAiming);
-            }
+            if (scopeEl) scopeEl.style.display = isAiming ? 'block' : 'none';
+            if (hudEl) hudEl.classList.toggle('scoped', isAiming);
             
             // Hide weapon when scoped
+            if (this.currentWeapon.mesh) {
+                this.currentWeapon.mesh.setEnabled(!isAiming);
+            }
+        }
+        // Iron sights (AR-15)
+        else if (this.currentWeapon.data.hasIronSights) {
+            this.camera.fov = isAiming ? 1.2 / this.currentWeapon.data.adsZoom : 1.2;
+            
+            if (ironSightsEl) ironSightsEl.style.display = isAiming ? 'block' : 'none';
+            if (hudEl) hudEl.classList.toggle('ironsights', isAiming);
+            
+            // Hide weapon when using iron sights
             if (this.currentWeapon.mesh) {
                 this.currentWeapon.mesh.setEnabled(!isAiming);
             }

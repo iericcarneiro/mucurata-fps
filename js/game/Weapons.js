@@ -53,7 +53,9 @@ const WeaponData = {
         reserveAmmo: 120,
         automatic: true,
         recoil: 0.04,
-        moveSpeed: 0.95
+        moveSpeed: 0.95,
+        adsZoom: 1.5, // Iron sights zoom
+        hasIronSights: true
     },
     [WeaponTypes.PISTOL]: {
         name: 'Pistola',

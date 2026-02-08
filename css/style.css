@@ -685,3 +685,78 @@ body {
 #hud.scoped .crosshair {
     display: none;
 }
+
+/* Iron Sights Overlay (AR-15) */
+.iron-sights {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.iron-sights-post {
+    position: absolute;
+    bottom: 35%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.front-post {
+    width: 4px;
+    height: 30px;
+    background: #1a1a1a;
+    border-radius: 2px 2px 0 0;
+    box-shadow: 1px 0 0 rgba(255,255,255,0.1);
+}
+
+.iron-sights-rear {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+}
+
+.rear-left, .rear-right {
+    width: 35px;
+    height: 80px;
+    background: linear-gradient(to right, #0a0a0a, #1f1f1f);
+    border-radius: 5px 5px 0 0;
+}
+
+.rear-right {
+    background: linear-gradient(to left, #0a0a0a, #1f1f1f);
+}
+
+.rear-aperture {
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    border: 15px solid #0f0f0f;
+    border-radius: 50%;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+/* Slight vignette when using iron sights */
+.iron-sights::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at center,
+        transparent 40%,
+        rgba(0, 0, 0, 0.3) 100%
+    );
+}
+
+#hud.ironsights .crosshair {
+    display: none;
+}
