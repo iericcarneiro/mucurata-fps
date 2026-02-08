@@ -296,24 +296,22 @@ class FavelaMap {
         // Generate buildings (barracos) across the map
         const buildingConfigs = [];
         
-        // Define building zones
+        // Define building zones - FEWER buildings, more spread out
         const zones = [
-            { x: -30, z: -30, count: 8 },
-            { x: 0, z: -20, count: 10 },
-            { x: 30, z: -30, count: 8 },
-            { x: -25, z: 0, count: 6 },
-            { x: 25, z: 0, count: 6 },
-            { x: -20, z: 15, count: 5 },
-            { x: 20, z: 15, count: 5 },
-            { x: 0, z: 25, count: 4 },
+            { x: -30, z: -30, count: 3 },
+            { x: 0, z: -25, count: 3 },
+            { x: 30, z: -30, count: 3 },
+            { x: -30, z: 10, count: 2 },
+            { x: 30, z: 10, count: 2 },
+            { x: 0, z: 30, count: 2 },
         ];
         
         for (const zone of zones) {
             for (let i = 0; i < zone.count; i++) {
                 const x = zone.x + Utils.random(-10, 10);
                 const z = zone.z + Utils.random(-8, 8);
-                const floors = 2; // 2 floors with internal stairs!
-                const width = Utils.random(5, 9);
+                const floors = 1; // 1 floor - simpler!
+                const width = Utils.random(5, 8);
                 const depth = Utils.random(5, 7);
                 
                 this.createBuilding(x, z, width, depth, floors);
