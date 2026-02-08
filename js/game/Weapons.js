@@ -24,7 +24,9 @@ const WeaponData = {
         reserveAmmo: 24,
         automatic: false,
         recoil: 0.15,
-        moveSpeed: 0.9
+        moveSpeed: 0.9,
+        adsZoom: 1.3,
+        hasShotgunSight: true
     },
     [WeaponTypes.SNIPER]: {
         name: 'Sniper',

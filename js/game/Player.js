@@ -511,41 +511,47 @@ class Player {
     }
     
     aim(isAiming) {
-        console.log('🎯 AIM:', isAiming);
-        if (!this.currentWeapon) {
-            console.log('🎯 No weapon!');
-            return;
-        }
-        console.log('🎯 Weapon:', this.currentWeapon.type, 'scopeZoom:', this.currentWeapon.data.scopeZoom, 'ironSights:', this.currentWeapon.data.hasIronSights);
+        if (!this.currentWeapon) return;
         
         const hudEl = document.getElementById('hud');
         const scopeEl = document.getElementById('sniper-scope');
         const ironSightsEl = document.getElementById('iron-sights');
-        console.log('🎯 Elements found - hud:', !!hudEl, 'scope:', !!scopeEl, 'iron:', !!ironSightsEl);
+        const shotgunSightEl = document.getElementById('shotgun-sight');
+        
+        // Reset all sights first
+        if (scopeEl) scopeEl.style.display = 'none';
+        if (ironSightsEl) ironSightsEl.style.display = 'none';
+        if (shotgunSightEl) shotgunSightEl.style.display = 'none';
+        if (hudEl) {
+            hudEl.classList.remove('scoped', 'ironsights', 'shotgunsight');
+        }
+        
+        if (!isAiming) {
+            this.camera.fov = 1.2;
+            if (this.currentWeapon.mesh) this.currentWeapon.mesh.setEnabled(true);
+            return;
+        }
         
         // Sniper scope
         if (this.currentWeapon.data.scopeZoom) {
-            this.camera.fov = isAiming ? 1.2 / this.currentWeapon.data.scopeZoom : 1.2;
-            
-            if (scopeEl) scopeEl.style.display = isAiming ? 'block' : 'none';
-            if (hudEl) hudEl.classList.toggle('scoped', isAiming);
-            
-            // Hide weapon when scoped
-            if (this.currentWeapon.mesh) {
-                this.currentWeapon.mesh.setEnabled(!isAiming);
-            }
+            this.camera.fov = 1.2 / this.currentWeapon.data.scopeZoom;
+            if (scopeEl) scopeEl.style.display = 'block';
+            if (hudEl) hudEl.classList.add('scoped');
+            if (this.currentWeapon.mesh) this.currentWeapon.mesh.setEnabled(false);
         }
         // Iron sights (AR-15)
         else if (this.currentWeapon.data.hasIronSights) {
-            this.camera.fov = isAiming ? 1.2 / this.currentWeapon.data.adsZoom : 1.2;
-            
-            if (ironSightsEl) ironSightsEl.style.display = isAiming ? 'block' : 'none';
-            if (hudEl) hudEl.classList.toggle('ironsights', isAiming);
-            
-            // Hide weapon when using iron sights
-            if (this.currentWeapon.mesh) {
-                this.currentWeapon.mesh.setEnabled(!isAiming);
-            }
+            this.camera.fov = 1.2 / this.currentWeapon.data.adsZoom;
+            if (ironSightsEl) ironSightsEl.style.display = 'block';
+            if (hudEl) hudEl.classList.add('ironsights');
+            if (this.currentWeapon.mesh) this.currentWeapon.mesh.setEnabled(false);
+        }
+        // Shotgun sight
+        else if (this.currentWeapon.data.hasShotgunSight) {
+            this.camera.fov = 1.2 / this.currentWeapon.data.adsZoom;
+            if (shotgunSightEl) shotgunSightEl.style.display = 'block';
+            if (hudEl) hudEl.classList.add('shotgunsight');
+            if (this.currentWeapon.mesh) this.currentWeapon.mesh.setEnabled(false);
         }
     }
     

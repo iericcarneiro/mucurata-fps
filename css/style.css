@@ -760,3 +760,119 @@ body {
 #hud.ironsights .crosshair {
     display: none;
 }
+
+/* Shotgun Sight Overlay */
+.shotgun-sight {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.shotgun-circle {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border: 3px solid #000;
+    border-radius: 50%;
+}
+
+.shotgun-cross {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+}
+
+.shotgun-cross .cross-line {
+    position: absolute;
+    background: #000;
+}
+
+.shotgun-cross .cross-line.vertical {
+    width: 3px;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.shotgun-cross .cross-line.horizontal {
+    width: 100%;
+    height: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.shotgun-cross .cross-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #000;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.cross-marks .mark {
+    position: absolute;
+    background: #000;
+}
+
+.cross-marks .mark.top,
+.cross-marks .mark.bottom {
+    width: 3px;
+    height: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.cross-marks .mark.top { top: calc(50% - 60px); }
+.cross-marks .mark.bottom { top: calc(50% + 50px); }
+
+.cross-marks .mark.left,
+.cross-marks .mark.right {
+    width: 10px;
+    height: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.cross-marks .mark.left { left: calc(50% - 60px); }
+.cross-marks .mark.right { left: calc(50% + 50px); }
+
+/* Tick marks on the cross */
+.shotgun-cross .cross-line.vertical::before,
+.shotgun-cross .cross-line.vertical::after,
+.shotgun-cross .cross-line.horizontal::before,
+.shotgun-cross .cross-line.horizontal::after {
+    content: '';
+    position: absolute;
+    background: #000;
+}
+
+.shotgun-cross .cross-line.vertical::before {
+    width: 8px; height: 3px;
+    top: 25%; left: -2.5px;
+}
+.shotgun-cross .cross-line.vertical::after {
+    width: 8px; height: 3px;
+    bottom: 25%; left: -2.5px;
+}
+.shotgun-cross .cross-line.horizontal::before {
+    width: 3px; height: 8px;
+    left: 25%; top: -2.5px;
+}
+.shotgun-cross .cross-line.horizontal::after {
+    width: 3px; height: 8px;
+    right: 25%; top: -2.5px;
+}
+
+#hud.shotgunsight .crosshair {
+    display: none;
+}
