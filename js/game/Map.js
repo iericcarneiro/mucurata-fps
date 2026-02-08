@@ -332,49 +332,38 @@ class FavelaMap {
         for (let floor = 0; floor < floors; floor++) {
             const baseY = groundY + floor * floorHeight;
             
-            // Side walls - WITH DOORS on ground floor!
+            // Side walls - WITH BIG OPEN DOORS on ground floor (no wall above door!)
             if (floor === 0) {
-                // Left wall with door
-                const sideDoorWidth = 2.0;
-                const sideDoorHeight = 2.5;
-                // Wall pieces around left door
-                this.createWall(x - width/2, baseY, z - depth/4, 0.2, floorHeight, depth/2 - sideDoorWidth/2, wallMat, 0);
-                this.createWall(x - width/2, baseY, z + depth/4, 0.2, floorHeight, depth/2 - sideDoorWidth/2, wallMat, 0);
-                this.createWall(x - width/2, baseY + sideDoorHeight, z, 0.2, floorHeight - sideDoorHeight, sideDoorWidth, wallMat, 0);
+                const sideDoorWidth = 2.5;
+                // Left wall - only 2 pieces (no top piece!)
+                this.createWall(x - width/2, baseY, z - depth/4 - 0.3, 0.2, floorHeight, depth/2 - sideDoorWidth/2 - 0.3, wallMat, 0);
+                this.createWall(x - width/2, baseY, z + depth/4 + 0.3, 0.2, floorHeight, depth/2 - sideDoorWidth/2 - 0.3, wallMat, 0);
                 
-                // Right wall with door
-                this.createWall(x + width/2, baseY, z - depth/4, 0.2, floorHeight, depth/2 - sideDoorWidth/2, wallMat, 0);
-                this.createWall(x + width/2, baseY, z + depth/4, 0.2, floorHeight, depth/2 - sideDoorWidth/2, wallMat, 0);
-                this.createWall(x + width/2, baseY + sideDoorHeight, z, 0.2, floorHeight - sideDoorHeight, sideDoorWidth, wallMat, 0);
+                // Right wall - only 2 pieces (no top piece!)
+                this.createWall(x + width/2, baseY, z - depth/4 - 0.3, 0.2, floorHeight, depth/2 - sideDoorWidth/2 - 0.3, wallMat, 0);
+                this.createWall(x + width/2, baseY, z + depth/4 + 0.3, 0.2, floorHeight, depth/2 - sideDoorWidth/2 - 0.3, wallMat, 0);
             } else {
                 // Upper floors - solid walls
                 this.createWall(x - width/2, baseY, z, 0.2, floorHeight, depth, wallMat, 0);
                 this.createWall(x + width/2, baseY, z, 0.2, floorHeight, depth, wallMat, 0);
             }
             
-            // Front wall with BIG door opening on ground floor
+            // Front wall with BIG door opening - NO WALL ABOVE DOOR!
             if (floor === 0) {
-                const doorWidth = 2.5; // BIGGER DOOR!
-                const doorHeight = 2.8; // Taller door
-                
-                // Left wall segment (next to door)
+                const doorWidth = 3.0; // BIGGER DOOR!
+                // Only side pieces - no top piece!
                 this.createWall(x - width/2 + (width - doorWidth)/4, baseY, z - depth/2, (width - doorWidth)/2, floorHeight, 0.2, wallMat, 0);
-                // Right wall segment (next to door)
                 this.createWall(x + width/2 - (width - doorWidth)/4, baseY, z - depth/2, (width - doorWidth)/2, floorHeight, 0.2, wallMat, 0);
-                // Top of door (small piece above)
-                this.createWall(x, baseY + doorHeight, z - depth/2, doorWidth, floorHeight - doorHeight, 0.2, wallMat, 0);
             } else {
                 this.createWall(x, baseY, z - depth/2, width, floorHeight, 0.2, wallMat, 0);
             }
             
-            // Back wall - ALSO with door on ground floor!
+            // Back wall with door - NO WALL ABOVE DOOR!
             if (floor === 0) {
-                const doorWidth = 2.0; // Back door
-                const doorHeight = 2.5;
-                
+                const doorWidth = 2.5;
+                // Only side pieces - no top piece!
                 this.createWall(x - width/2 + (width - doorWidth)/4, baseY, z + depth/2, (width - doorWidth)/2, floorHeight, 0.2, wallMat, 0);
                 this.createWall(x + width/2 - (width - doorWidth)/4, baseY, z + depth/2, (width - doorWidth)/2, floorHeight, 0.2, wallMat, 0);
-                this.createWall(x, baseY + doorHeight, z + depth/2, doorWidth, floorHeight - doorHeight, 0.2, wallMat, 0);
             } else {
                 this.createWall(x, baseY, z + depth/2, width, floorHeight, 0.2, wallMat, 0);
             }
