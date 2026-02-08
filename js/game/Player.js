@@ -511,15 +511,20 @@ class Player {
     }
     
     aim(isAiming) {
+        console.log('🎯 AIM called:', isAiming, 'weapon:', this.currentWeapon?.type, 'scopeZoom:', this.currentWeapon?.data?.scopeZoom);
+        
         // Implement scope/ADS for sniper
         if (this.currentWeapon && this.currentWeapon.data.scopeZoom) {
+            console.log('🎯 Activating scope!');
             this.camera.fov = isAiming ? 1.2 / this.currentWeapon.data.scopeZoom : 1.2;
             
             // Show/hide sniper scope overlay
             const scopeEl = document.getElementById('sniper-scope');
             const hudEl = document.getElementById('hud');
+            console.log('🎯 Elements:', scopeEl, hudEl);
             if (scopeEl) {
                 scopeEl.style.display = isAiming ? 'block' : 'none';
+                console.log('🎯 Scope display:', scopeEl.style.display);
             }
             if (hudEl) {
                 hudEl.classList.toggle('scoped', isAiming);
