@@ -511,11 +511,17 @@ class Player {
     }
     
     aim(isAiming) {
-        if (!this.currentWeapon) return;
+        console.log('🎯 AIM:', isAiming);
+        if (!this.currentWeapon) {
+            console.log('🎯 No weapon!');
+            return;
+        }
+        console.log('🎯 Weapon:', this.currentWeapon.type, 'scopeZoom:', this.currentWeapon.data.scopeZoom, 'ironSights:', this.currentWeapon.data.hasIronSights);
         
         const hudEl = document.getElementById('hud');
         const scopeEl = document.getElementById('sniper-scope');
         const ironSightsEl = document.getElementById('iron-sights');
+        console.log('🎯 Elements found - hud:', !!hudEl, 'scope:', !!scopeEl, 'iron:', !!ironSightsEl);
         
         // Sniper scope
         if (this.currentWeapon.data.scopeZoom) {
