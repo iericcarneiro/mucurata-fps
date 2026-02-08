@@ -249,34 +249,8 @@ class FavelaMap {
     }
     
     createTerrain() {
-        // Simple flat terrain - no floating platforms!
-        // Just ground level with some raised areas
-        
-        // Main play area is flat - buildings provide verticality
-        // Only create a few low raised areas for cover
-        
-        const terrainPieces = [];
-        
-        // Low cover blocks scattered around
-        for (let i = 0; i < 15; i++) {
-            const x = Utils.random(-40, 40);
-            const z = Utils.random(-40, 40);
-            
-            const cover = BABYLON.MeshBuilder.CreateBox(`cover_${i}`, {
-                width: Utils.random(2, 4),
-                height: Utils.random(0.5, 1.2),
-                depth: Utils.random(2, 4)
-            }, this.scene);
-            
-            cover.position = new BABYLON.Vector3(x, 0.5, z);
-            cover.material = this.materials.concrete;
-            cover.checkCollisions = true;
-            cover.isPickable = true;
-            
-            terrainPieces.push(cover);
-        }
-        
-        this.meshes.push(...terrainPieces);
+        // Flat terrain - no extra blocks needed
+        // Buildings and props provide all the cover
     }
     
     createRamp(x, y, z, width, length, slopeAngle) {
@@ -661,42 +635,21 @@ class FavelaMap {
     }
     
     createProps() {
-        // Add environmental props - ON THE GROUND (not floating!)
-        
-        // Extra barrels for cover
-        for (let i = 0; i < 15; i++) {
+        // Only small barrels for cover - no big blocks!
+        for (let i = 0; i < 10; i++) {
             const x = Utils.random(-45, 45);
             const z = Utils.random(-45, 45);
             
             const barrel = BABYLON.MeshBuilder.CreateCylinder(`propBarrel_${i}`, {
-                diameter: 0.7,
-                height: 1.1
+                diameter: 0.6,
+                height: 1
             }, this.scene);
             
-            barrel.position = new BABYLON.Vector3(x, 0.55, z);
+            barrel.position = new BABYLON.Vector3(x, 0.5, z);
             barrel.material = Math.random() > 0.5 ? this.materials.rust : this.materials.metal;
             barrel.checkCollisions = true;
             barrel.isPickable = true;
             this.meshes.push(barrel);
-        }
-        
-        // Sandbag walls for cover
-        for (let i = 0; i < 8; i++) {
-            const x = Utils.random(-40, 40);
-            const z = Utils.random(-40, 40);
-            
-            const sandbags = BABYLON.MeshBuilder.CreateBox(`sandbags_${i}`, {
-                width: Utils.random(2, 4),
-                height: 1,
-                depth: 0.8
-            }, this.scene);
-            
-            sandbags.position = new BABYLON.Vector3(x, 0.5, z);
-            sandbags.rotation.y = Utils.random(0, Math.PI);
-            sandbags.material = this.materials.ground;
-            sandbags.checkCollisions = true;
-            sandbags.isPickable = true;
-            this.meshes.push(sandbags);
         }
     }
     
