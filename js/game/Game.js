@@ -170,15 +170,11 @@ class Game {
         pipeline.imageProcessing.vignetteCameraFov = 0.4;
         pipeline.imageProcessing.vignetteColor = new BABYLON.Color4(0, 0, 0, 1);
         
-        // Chromatic aberration (subtle, for realism)
-        pipeline.chromaticAberrationEnabled = true;
-        pipeline.chromaticAberration.aberrationAmount = 15;
-        pipeline.chromaticAberration.radialIntensity = 0.8;
+        // Chromatic aberration - REDUCED (was too strong)
+        pipeline.chromaticAberrationEnabled = false;
         
-        // Grain for cinematic feel
-        pipeline.grainEnabled = true;
-        pipeline.grain.intensity = 8;
-        pipeline.grain.animated = true;
+        // Grain - DISABLED (was too noisy)
+        pipeline.grainEnabled = false;
         
         // Store pipeline reference
         this.renderPipeline = pipeline;

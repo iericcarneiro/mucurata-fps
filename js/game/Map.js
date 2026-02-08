@@ -338,7 +338,7 @@ class FavelaMap {
             for (let i = 0; i < zone.count; i++) {
                 const x = zone.x + Utils.random(-10, 10);
                 const z = zone.z + Utils.random(-8, 8);
-                const floors = Utils.randomInt(1, 3);
+                const floors = 1; // Only 1 floor - simpler, no floating stairs!
                 const width = Utils.random(4, 8);
                 const depth = Utils.random(4, 6);
                 
@@ -430,10 +430,7 @@ class FavelaMap {
             this.meshes.push(metalRoof);
         }
         
-        // Add external stairs for multi-floor buildings
-        if (floors > 1 && Math.random() > 0.3) {
-            this.createExternalStairs(x, z, groundY, floors, width, depth);
-        }
+        // External stairs removed - buildings are only 1 floor now for simplicity
     }
     
     createWall(x, y, z, width, height, depth, material, rotation) {
