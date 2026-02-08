@@ -455,17 +455,25 @@ class Weapon {
         });
         
         if (hit && hit.hit) {
-            // Check if backstab
-            const npc = hit.pickedMesh;
-            const toPlayer = this.camera.position.subtract(npc.position).normalize();
-            const npcForward = npc.getDirection(BABYLON.Vector3.Forward());
-            const dot = BABYLON.Vector3.Dot(toPlayer, npcForward);
+            const hitMesh = hit.pickedMesh;
+            const npcInstance = hitMesh.metadata.npcInstance;
             
-            const isBackstab = dot > 0.5; // Behind the enemy
+            // Check if backstab - use the NPC's main mesh for direction
+            let isBackstab = false;
+            if (npcInstance && npcInstance.mesh) {
+                const npcMesh = npcInstance.mesh;
+                const toPlayer = this.camera.position.subtract(npcMesh.position).normalize();
+                // NPC forward is based on its Y rotation
+                const npcAngle = npcMesh.rotation.y;
+                const npcForward = new BABYLON.Vector3(Math.sin(npcAngle), 0, Math.cos(npcAngle));
+                const dot = BABYLON.Vector3.Dot(toPlayer, npcForward);
+                isBackstab = dot > 0.5; // Behind the enemy
+            }
+            
             const damage = isBackstab ? 200 : this.data.damage; // Insta-kill from behind
             
             return [{
-                mesh: npc,
+                mesh: hitMesh,
                 point: hit.pickedPoint,
                 distance: hit.distance,
                 damage: damage,
